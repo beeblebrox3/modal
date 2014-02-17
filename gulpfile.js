@@ -9,7 +9,7 @@ gulp.task('default', function () {
         .pipe(uglify())
         .pipe(gulp.dest('dist/js'));
 
-    gup.src('src/css/*.scss')
+    gulp.src('src/css/*.scss')
         .pipe(sass())
         .pipe(uglify())
         .pipe(gulp.dest('dist/css'));
