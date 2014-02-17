@@ -16,6 +16,12 @@
         </div>
         <script type="text/javascript" src="../dist/js/Modal.js"></script>
         <script type="text/javascript">
+            window.onfocus = function () {
+                var s = document.head.getElementsByTagName('link'), sl = s.length;
+                for (var i =0; i < sl; i++) {
+                    s[i].href = s[i].href.split('?')[0] + '?' + Math.random();
+                }
+            }
         </script>
     </body>
 </html>

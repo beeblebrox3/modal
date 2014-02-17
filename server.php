@@ -2,4 +2,4 @@
 
 sleep(2);
 
-echo '<strong>Ok :)</strong>';
+echo '<div style="width: 300px; height: 200px;">sd asdsa dasdasdasd adas</div>';

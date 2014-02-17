@@ -2,37 +2,29 @@ function Modal(userOptions) {
     'use strict';
     
     var defaultOptions = {
-        width:   0,
-        height:  0,
-        locked:  false,
-        title:   '',
-        html:    '',
-        buttons: [],
-        url:     null
+        width:         0,
+        height:        0,
+        autoDimension: true,
+        locked:        false,
+        title:         '',
+        html:          '',
+        buttons:       [],
+        url:           '',
+        loading_text:  'loading...'
     };
 
     this.options = this._merge(defaultOptions, userOptions);
     this._validate();
 
     this._elements = {
-        mask:      this._mask(),
+        mask:      this._create('mask'),
         container: this._create('container')
     };
 
+    this._visible = false;
+
     this._build();
 };
-
-/**
- * Creates the mask
- * @return object
- */
-Modal.prototype._mask = function () {
-    var mask = document.querySelectorAll('.modal-mask');
-    if(!mask.length) {
-        mask = this._create('mask');
-    }
-    return mask;
-}
 
 /**
  * merge obj_a with obj_b, keeping only the keys of the obj_a and replacing
@@ -82,20 +74,25 @@ Modal.prototype._create = function (className, content) {
 Modal.prototype._validate = function () {
     var options = this.options;
 
-    if (typeof options.width !== 'string' && typeof options.width !== 'number') {
-        throw "width MUST be a string or a number";
-    } else if (typeof options.width === 'int' && options.width < 1) {
-        throw "width MUST be bigger than 1";
-    } else if (typeof options.width === 'string ' && (options.width.indexOf('%') === -1 || options.width.indexOf('px') === -1)) {
-        throw "width MUST be in pt or % units"; // @todo add support to more units in the validation
-    }
+    if (options.autoDimension === true) {
+        options.width = '0px';
+        options.height = '0px';
+    } else if (typeof options.autoDimension !== 'boolean') {
+        throw "autoDimension MUST be boolean";
+    } else {
+        options.width = (typeof options.width === 'number') ? '' + options.width + 'px' : '';
+        if (typeof options.width !== 'string') {
+            throw "width MUST be a string or a number";
+        } else if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
+            throw "width MUST be in pt or % units"; // @todo add support to more units in the validation
+        }
 
-    if (typeof options.height !== 'string' && typeof options.height !== 'number') {
-        throw "height MUST be a string or a number";
-    } else if (typeof options.height === 'int' && options.height < 1) {
-        throw "height MUST be bigger than 1";
-    } else if (typeof options.height === 'string ' && (options.height.indexOf('%') === -1 || options.height.indexOf('px') === -1)) {
-        throw "height MUST be in pt or % units"; // @todo add support to more units in the validation
+        options.height = (typeof options.height === 'number') ? '' + options.height + 'px' : '';
+        if (typeof options.height !== 'string') {
+            throw "height MUST be a string or a number";
+        } else if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
+            throw "height MUST be in pt or % units"; // @todo add support to more units in the validation
+        }
     }
 
     if (typeof options.locked !== 'boolean') {
@@ -120,38 +117,99 @@ Modal.prototype._validate = function () {
 }
 
 /**
+ * set the modal dimensions and position on screen
+ */
+Modal.prototype._align = function () {
+    // set width
+    if (!this.options.autoDimension) {
+        this._elements.container.style.width = this.options.width;
+        this._elements.container.style.height = this.options.height;
+    } else {
+        // set heigh
+        var height = 0,
+            width = 0;
+
+        var elements = ['content', 'header', 'loading', 'buttons'],
+            ec = elements.length,
+            i = 0;
+
+        this._elements.container.className += ' hide-modal';
+        document.body.appendChild(this._elements.container);
+
+        for (i = 0; i < ec; i++) {
+            if (this._elements.hasOwnProperty(elements[i])) {
+                height += this._elements[elements[i]].offsetHeight;
+                width += this._elements[elements[i]].offsetWidth;
+            }
+        }
+
+        this._elements.container.remove();
+        this._elements.container.className = this._elements.container.className.replace(' hide-modal', '');
+
+        this._elements.container.style.height = height + 'px';
+        this._elements.container.style.width = width + 'px';
+
+        if (height < window.outerHeight) {
+            this._elements.container.className += ' modal-centered';
+        } else {
+            this._elements.container.style.marginTop = '30px';
+        }
+    }
+}
+
+/**
  * [_build description]
  */
 Modal.prototype._build = function () {
-    if (this.options.width) {
-        this._elements.container.style.width = options.width;
-    }
+    var options = this.options,
+        self = this;
 
-    if (this.options.height) {
-        this._elements.container.style.height = options.height;
-    }
-
-    if (this.options.title.length) {
+    if (options.title.length) {
+        this._elements.header = this._create('header', options.title);
         this._elements.container.appendChild(
-            this._create('header', this.options.title)
+            this._elements.header
         );
     }
 
-    if (this.options.html.length) {
+    if (!options.locked) {
+        this._elements.close = this._create('close', 'x');
         this._elements.container.appendChild(
-            this._create('content', this.options.html)
+            this._elements.close
+        );
+    }
+
+    if (options.html.length) {
+        this._elements.content = this._create('content', options.html);
+        this._elements.container.appendChild(
+            this._elements.content
         );
     } else {
+        this._elements.loading = this._create('loading', options.loading_text);
         this._elements.container.appendChild(
-            this._create('loading')
+            this._elements.loading
         );
-        this._getContentFromURL(this.options.url, function (html) {
-            this.update({
-                url: null,
-                html: html
-            });
+        this._getContentFromURL(options.url, function (html) {
+            if (this._visible) {
+                this.update({
+                    url: null,
+                    html: html
+                });
+            }
         });
     }
+
+    // configure events
+    if (!options.locked) {
+        this._elements.close.onclick = function () {
+            self.close();
+        }
+
+        this._elements.mask.onclick = function () {
+            self.close();
+        }
+    }
+
+    this._align();
 }
 
 /**
@@ -178,7 +236,11 @@ Modal.prototype._getContentFromURL = function (url, callback) {
 }
 
 Modal.prototype.show = function () {
+    if (document.body.querySelectorAll('.modal-mask'))  {
+        document.body.appendChild(this._elements.mask);
+    }
     document.body.appendChild(this._elements.container);
+    this._visible = true;
 }
 
 Modal.prototype.update = function (options) {
@@ -189,9 +251,15 @@ Modal.prototype.update = function (options) {
     this.show();
 }
 
+Modal.prototype.close = function () {
+    this._elements.container.remove();
+    this._elements.mask.remove();
+}
+
 
 a = new Modal({
     url: 'http://localhost/modal/server.php'
+    // html: '<div id="sss">sd asdsa dasdasdasd adas</div>'
 });
 a.show();
 console.log(a);
