@@ -2,4 +2,4 @@
 
 sleep(2);
 
-echo '<div style="width: 300px; height: 200px;">sd asdsa dasdasdasd adas</div>';
+echo '<img src="http://lorempixel.com/people/720/480/" width="720" height="480" />';
