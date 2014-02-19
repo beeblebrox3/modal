@@ -1,10 +1,14 @@
+/*jslint browser: true, nomen: true */
+
 function Modal(userOptions) {
     'use strict';
-    
+
     var defaultOptions = {
         width:         0,
         height:        0,
+        padding:       20,
         autoDimension: true,
+        autoShow:      true,
         locked:        false,
         title:         '',
         html:          '',
@@ -27,38 +31,44 @@ function Modal(userOptions) {
     this._visible = false;
 
     this._build();
-};
+
+    if (this.options.autoShow) {
+        this.show();
+    }
+}
 
 /**
- * merge obj_a with obj_b, keeping only the keys of the obj_a and replacing
- * with the obj_b if exists
+ * merges obj_a with obj_b, keeping only the keys of the obj_a and replacing the
+ * values found in obj_b
  * @param  object obj_a source object
  * @param  object obj_b new data
  * @return object
  */
 Modal.prototype._merge = function (obj_a, obj_b) {
-    var response = {};
-    for (var i in obj_a) {
+    'use strict';
+
+    var response = {},
+        i = 0;
+
+    for (i in obj_a) {
         if (obj_a.hasOwnProperty(i)) {
-            if (obj_b.hasOwnProperty(i)) {
-                response[i] = obj_b[i];
-            } else {
-                response[i] = obj_a[i];
-            }
+            response[i] = (obj_b.hasOwnProperty(i)) ? obj_b[i] : obj_a[i];
         }
     }
     return response;
 };
 
 /**
- * shortcut to create a div with a class prefix "model-"
+ * shortcut to create a div with a class prefix "modal-"
  * @param  string className 
  * @param  string content   valid HTML
  * @return object
  */
 Modal.prototype._create = function (className, content) {
+    'use strict';
+
     if (typeof className !== 'string' || !className.length) {
-        throw "className MUST be not empty string";
+        throw "className MUST be a non empty string";
     }
 
     var element = document.createElement('div');
@@ -69,37 +79,56 @@ Modal.prototype._create = function (className, content) {
     }
 
     return element;
-}
+};
 
 /**
- * validate options
+ * checks if the options are valid
  */
 Modal.prototype._validate = function () {
-    var options = this.options;
+    'use strict';
 
+    var options = this.options;
+    
+    // autoDimenions
+    if (typeof options.autoDimension !== 'boolean') {
+        throw "autoDimension MUST be boolean";
+    }
+    
+    // width and height
     if (options.autoDimension === true) {
         options.width = '0px';
         options.height = '0px';
-    } else if (typeof options.autoDimension !== 'boolean') {
-        throw "autoDimension MUST be boolean";
     } else {
-        options.width = (typeof options.width === 'number') ? '' + options.width + 'px' : '';
-        if (typeof options.width !== 'string') {
-            throw "width MUST be a string or a number";
-        } else if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
-            throw "width MUST be in pt or % units"; // @todo add support to more units in the validation
-        }
+        options.width = (typeof options.width === 'number') ? options.width + 'px' : options.width;
+        options.height = (typeof options.height === 'number') ? options.height + 'px' : options.height;
+    }
+    
+    if (typeof options.width !== 'string') {
+        throw "width MUST be a string or a number";
+    } else if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
+        throw "width MUST be in pt or % units"; // @todo add support to more units in the validation
+    }
 
-        options.height = (typeof options.height === 'number') ? '' + options.height + 'px' : '';
-        if (typeof options.height !== 'string') {
-            throw "height MUST be a string or a number";
-        } else if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
-            throw "height MUST be in pt or % units"; // @todo add support to more units in the validation
-        }
+    if (typeof options.height !== 'string') {
+        throw "height MUST be a string or a number";
+    } else if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
+        throw "height MUST be in pt or % units"; // @todo add support to more units in the validation
+    }
+
+    // padding
+    options.padding = (typeof options.padding === 'number') ? options.padding + 'px' : options.padding;
+    if (typeof options.padding !== 'string') {
+        throw "padding MUST be a string or a number";
+    } else if (options.padding.indexOf('%') === -1 && options.padding.indexOf('px') === -1) {
+        throw "padding MUST be in pt or % units"; // @todo add support to more units in the validation
     }
 
     if (typeof options.locked !== 'boolean') {
-        throw   "locket MUST be a boolean";
+        throw "locked MUST be a boolean";
+    }
+
+    if (typeof options.autoShow !== 'boolean') {
+        throw "autoshow MUST be a boolean";
     }
 
     if (typeof options.title !== 'string') {
@@ -157,6 +186,9 @@ Modal.prototype._validate = function () {
  * set the modal dimensions and position on screen
  */
 Modal.prototype._align = function () {
+    if (this.options.padding) {
+        this._elements.container.style.padding = this.options.padding;
+    }
     // set width
     if (!this.options.autoDimension) {
         this._elements.container.style.width = this.options.width;
@@ -176,6 +208,8 @@ Modal.prototype._align = function () {
         for (i = 0; i < get_metrics.width.length; i++) {
             if (this._elements.hasOwnProperty(get_metrics.width[i])) {
                 width += this._elements[get_metrics.width[i]].offsetWidth;
+                console.log(get_metrics.width[i]);
+                console.log(this._elements[get_metrics.width[i]].offsetWidth);
             }
         }
 
@@ -184,17 +218,6 @@ Modal.prototype._align = function () {
                 height += this._elements[get_metrics.height[i]].offsetHeight;
             }
         }
-
-        // var elements = ['content', 'header', 'loading', 'buttons-container'],
-        //     ec = elements.length,
-        //     i = 0;
-
-        // for (i = 0; i < ec; i++) {
-        //     if (this._elements.hasOwnProperty(elements[i])) {
-        //         height += this._elements[elements[i]].offsetHeight;
-        //         width += this._elements[elements[i]].offsetWidth;
-        //     }
-        // }
 
         // this._elements.container.remove();
         this._remove(this._elements.container);
@@ -380,20 +403,11 @@ Modal.prototype._remove = function () {
 a = new Modal({
     title: 'imagem bonita :)',
     url: 'http://' + window.location.hostname + '/modal/server.php',
-    onShow: function () {
-        console.log('show');
-    },
-    beforeClose: function () {
-        console.log('beforeClose');
-        // return false;
-    },
-    onClose: function () {
-        console.log('onClose');
-    },
     buttons: [{
         title: 'Close',
         click: function () {
-            a.close();
+            // a.close();
+            console.log(this);
         },
     }, {
         title: 'update',
@@ -405,7 +419,6 @@ a = new Modal({
     }]
     // html: '<div id="sss">sd asdsa dasdasdasd adas</div>'
 });
-a.show();
 document.body.querySelectorAll('.fire-modal')[0].onclick = function () {
     a.show();
 }

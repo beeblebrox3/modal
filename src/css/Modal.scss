@@ -29,6 +29,7 @@ $mask-color: rgba(255, 255, 255, 0.8);
     position: absolute;
     left: 0;
     right: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
     .modal-container.modal-centered {
         top: 0;
@@ -39,7 +40,6 @@ $mask-color: rgba(255, 255, 255, 0.8);
         text-transform: uppercase;
         line-height: 120%;
         padding: 10px 0;
-        margin-bottom: 15px;
         // border-bottom: 1px solid #999;
     }
 
@@ -48,22 +48,29 @@ $mask-color: rgba(255, 255, 255, 0.8);
     position: absolute;
     top: 5px;
     right: 5px;
-    padding: 4px;
     cursor: pointer;
-    font-size: 25px;
-    color: #ccc;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    padding: 2px;
+    margin: 0;
+    background-color: rgb(221, 221, 221);
+    border: none;
+    color: rgb(51, 51, 51);
 }
-    .modal-container:hover .modal-close {
-        color: #333;
+    .modal-close:hover {
+        background-color: rgb(200, 200, 200);
     }
 .modal-content{
     display: table-cell;
     position: relative;
+    padding: 15px 0;
+    clear: both;
 }
 .modal-buttons-container {
-    // border-top: 1px solid #999;
     text-align: right;
-    padding-top: 10px;
 }
     .modal-buttons-container .modal-button {
         background-color: rgb(221, 221, 221);
@@ -71,7 +78,6 @@ $mask-color: rgba(255, 255, 255, 0.8);
         color: rgb(51, 51, 51);
         cursor: pointer;
         display: inline-block;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 14px;
         font-style: normal;
         font-variant: normal;
