@@ -217,13 +217,32 @@
     width: 300,
     height: 2000
 });</code></pre>
+                    <h3 id="very-long-modal">Using a element of the page <small id="test-modal-8">Click to test</small></h3>
+                    <p>First, put the target element on a hidden containr:</p>
+<pre><code class="html">&lt;div style="display: none">
+    &lt;div id="myElement" style="width: 300px; height: 300px; text-align: center; background: silver;">
+        The element :)
+    &lt;/div>
+&lt;/div></code></pre>
+                    <p>Now, pass the element in the html key:</p>
+<pre><code class="javascript">
+var myModal = new Modal({
+    title: 'Look this element',
+    html: document.querySelector('#myElement')
+});</code></pre>
+
+                    <div style="display: none">
+                        <div id="myElement" style="width: 300px; height: 300px; text-align: center; background: silver;">
+                            The element :)
+                        </div>
+                    </div>
                 </section>
             </article>
         </div>
         
         <script type="text/javascript" src="../dist/js/Modal.js"></script>
         <script type="text/javascript">
-            document.body.querySelectorAll('#test-modal-1')[0].onclick = function () {
+            document.body.querySelector('#test-modal-1').onclick = function () {
                 if (typeof testModal1 === 'undefined') {
                     var testModal1 = new Modal({
                         html: 'Hello world :)'
@@ -233,7 +252,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-2')[0].onclick = function () {
+            document.body.querySelector('#test-modal-2').onclick = function () {
                 if (typeof testModal2 === 'undefined') {
                     var testModal2 = new Modal({
                         title: 'Modal with title',
@@ -244,7 +263,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-3')[0].onclick = function () {
+            document.body.querySelector('#test-modal-3').onclick = function () {
                 if (typeof testModal3 === 'undefined') {
                     var testModal3 = new Modal({
                         html: '<img src="http://lorempixel.com/people/720/480" width="720" height="480" />',
@@ -255,7 +274,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-4')[0].onclick = function () {
+            document.body.querySelector('#test-modal-4').onclick = function () {
                 if (typeof testModal4 === 'undefined') {
                     var testModal4 = new Modal({
                         title: "Remote data! yay :)",
@@ -267,7 +286,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-5')[0].onclick = function () {
+            document.body.querySelector('#test-modal-5').onclick = function () {
                 if (typeof testModal5 === 'undefined') {
                     var testModal5 = new Modal({
                         title: 'Buttons',
@@ -291,7 +310,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-6')[0].onclick = function () {
+            document.body.querySelector('#test-modal-6').onclick = function () {
                 if (typeof testModal6 === 'undefined') {
                     var testModal6 = new Modal({
                         title: "You can't get out!",
@@ -308,7 +327,7 @@
                 }
             };
 
-            document.body.querySelectorAll('#test-modal-7')[0].onclick = function () {
+            document.body.querySelector('#test-modal-7').onclick = function () {
                 if (typeof testModal7 === 'undefined') {
                     var testModal7 = new Modal({
                         title: 'very long modal',
@@ -319,6 +338,17 @@
                     });
                 } else {
                     testModal7.show();
+                }
+            };
+
+            document.body.querySelector('#test-modal-8').onclick = function () {
+                if (typeof testModal8 === 'undefined') {
+                    var testModal8 = new Modal({
+                        title: 'Look this element',
+                        html: document.querySelector('#myElement')
+                    });
+                } else {
+                    testModal8.show();
                 }
             };
         </script>

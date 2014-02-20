@@ -145,8 +145,8 @@ Modal.prototype._validate = function () {
     }
 
     // html
-    if (typeof options.html !== 'string') {
-        throw "html MUST be string";
+    if (typeof options.html !== 'string' && typeof options.html !== 'object') {
+        throw "html MUST be string or a HTML Object";
     }
 
     if (typeof options.url !== 'string') {
@@ -174,7 +174,7 @@ Modal.prototype._validate = function () {
     }
 
     // url
-    if (!options.html.length && !options.url.length) {
+    if ((typeof options.html === 'string' && !options.html.length) && !options.url.length) {
         throw "you MUST provide a html content or a URL";
     }
 
@@ -212,9 +212,7 @@ Modal.prototype._align = function () {
 
     // padding
     this._elements.container.style.padding = this.options.padding;
-    if (!this._elements.hasOwnProperty('header')
-            && !this._elements.hasOwnProperty('buttons_container')
-            && this.options.padding === '0px') {
+    if (!this._elements.hasOwnProperty('header') && !this._elements.hasOwnProperty('buttons_container') && this.options.padding === '0px') {
         this._elements.content.style.padding = '0px';
     }
 
@@ -308,7 +306,12 @@ Modal.prototype._build = function () {
             };
         }
 
-        this._elements.content = this._create('content', options.html);
+        this._elements.content = this._create('content');
+        if (typeof this.options.html === 'string') {
+            this._elements.content.innerHTML = this.options.html;
+        } else {
+            this._elements.content.appendChild(this.options.html.cloneNode());
+        }
         this._elements.container.appendChild(
             this._elements.content
         );
