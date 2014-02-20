@@ -1,67 +1,146 @@
 #Modal
+
 ## Usage
-<pre>
-    var myModal = new Modal(options);
-</pre>
+
+```javascript
+var myModal = new Modal(options);
+```
 
 ## Options
 Option | Type | Default | Description
--|-|-|-
-width | int or string | | Valid value to width property (60, '60px', '60%' etc)
-height | int or string | | Valid value to height property (60, '60px', '60%' etc)
-locked | bol | false | If true, user cannot close the modal on click in the mask and the close button will not be rendered
-autoShow | bol | true | If false, the modal will not be automatic rendered, jut when the show method is called
-
-> The Modal can be used to display simple messages, without the developer write any HTML code, using the default theme, or can be filled with any HTML code.
-> The above propertis will be used when developer want to use the theme
-
-Option | Type | Description
--|-|-
-title | string | the title
-text | string | the content of the modal. Can be plain text or valid HTML
-buttons | [] | User can send a array of objects representing buttons. These objects can contain the following properties: **className**, **title** and **onClick**.
-
-> If the developer dont want to use the theme, can use the following options:
-
-Option | Type | Description
--|-|-
-html | string | the content. Can be a plain text or a valid HTML
-url | string | user can inform a URL to be used as source of the html content
+---|---|---|---
+width | int or string | 0 | Define the width of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+height | int or string | 0 | Define the height of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+padding | int or string | 20 | Define the padding of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+autoDimension | boolean | true | When true, the modal will get the width and height of the content plus buttons, title, etc.<br />**In that case, your content must have a defined width and height, like a image with width and height defined in CSS or inline**. <br />When false, use the width and height provided.
+autoShow | boolean | true | When true, the modal will open when you create it (new Modal(options)). When false, you must use the `show()` to show the modal.
+locked | boolean | false | When true, click on the mask will not close the modal and the close button will not be rendered.
+title | string | '' | Set the title. Try to keep it short ;)
+html | string | '' | The content of the modal. Plain text or valid HTML are supported.
+buttons | array | [] | Modal can create buttons and define a callback to the click event.<br>The buttons are specified as objects with the following properties: **title**(string, required), **className**(string, optional) and **click**(function, required).
+url | string | '' | When provided, the HTML will be loaded via AJAX
+onShow | function | '' | Callback to call after modal be rendered
+beforeClose | function | '' | Callback to call just befor close. If it returns false, the Modal will not be closed
+onClose | function | '' | Callback to call after close
+loading_text | string | 'loading...' | Plain text or HTML to be displayed while the AJAX request is happening when the URL option is used.
 
 
-## Events
-Event | Description
--|-
-init | This event is fired before the Modal do anything. It can return a object to replace some of the current options. Example: if you have a method to create the html content of the modal, you can call this funcion here
-onShow | This event is fired when the Modal is rendered
-beforeClose | This event is fired before the Modal is closed. If returns false, the Modal will not be closed
-onClose | This event is fired when the Modal is closed
 
-## Methos
+
+## Methods
 Method | Arguments | Description
--|-|-
+---|---|---
 show() | | Show the modal if it is hidden
 close() | | Close the modal
-update() | options | Updates the initial options and render the new Modal
+update() | options | Merges options with the current options of the modal and render the updated modal
 
 ## Examples
 
-<pre>
-    var myModal = new Modal({
-        width: '60%',
-        title: 'Hello World!',
-        text: 'This is my first modal :)',
-        buttons: [{
-            className: 'button',
-            title: 'Click me',
-            onClick: function () {
-                myModal.update({
-                    text: 'You modified the content clicking in a button :)'
-                });
-            }
-        }],
-        onClose: function () {
-            alert('Modal is closed :(');
+
+### Simple message
+#Modal
+
+## Usage
+
+```javascript
+var myModal = new Modal(options);
+```
+
+## Options
+Option | Type | Default | Description
+---|---|---|---
+width | int or string | 0 | Define the width of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+height | int or string | 0 | Define the height of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+padding | int or string | 20 | Define the padding of modal. You can use a int for px or string to pass px or % units.<br> Ex: '10%' or '10px' are valid options.
+autoDimension | boolean | true | When true, the modal will get the width and height of the content plus buttons, title, etc.<br />**In that case, your content must have a defined width and height, like a image with width and height defined in CSS or inline**. <br />When false, use the width and height provided.
+autoShow | boolean | true | When true, the modal will open when you create it (new Modal(options)). When false, you must use the `show()` to show the modal.
+locked | boolean | false | When true, click on the mask will not close the modal and the close button will not be rendered.
+title | string | '' | Set the title. Try to keep it short ;)
+html | string | '' | The content of the modal. Plain text or valid HTML are supported.
+buttons | array | [] | Modal can create buttons and define a callback to the click event.<br>The buttons are specified as objects with the following properties: **title**(string, required), **className**(string, optional) and **click**(function, required).
+url | string | '' | When provided, the HTML will be loaded via AJAX
+onShow | function | '' | Callback to call after modal be rendered
+beforeClose | function | '' | Callback to call just befor close. If it returns false, the Modal will not be closed
+onClose | function | '' | Callback to call after close
+loading_text | string | 'loading...' | Plain text or HTML to be displayed while the AJAX request is happening when the URL option is used.
+
+
+
+
+## Methods
+Method | Arguments | Description
+---|---|---
+show() | | Show the modal if it is hidden
+close() | | Close the modal
+update() | options | Merges options with the current options of the modal and render the updated modal
+
+## Examples
+
+### Simple message
+```javascript
+var myModal = new Modal({
+    html: 'Hello world :)'
+});
+```
+
+### Simple message with title
+```javascript
+var myModal = new Modal({
+    title: 'Modal with title',
+    html: 'Hello Word :)'
+});
+```
+
+### Load a image
+```javascript
+var myModal = new Modal({
+    html: '<img src="http://lorempixel.com/people/720/480" width="720" height="480" />'
+});
+```
+
+### Load a remote data
+```javascript
+var myModal = new Modal({
+    url: 'http://site.com/stuff'
+    loading_text: 'wait... worth it'
+});
+```
+
+### Using buttons
+```javascript
+var myModal = new Modal({
+    title: 'Buttons',
+    html: 'Click on the bottons above',
+    buttons: [{
+        title: 'Cancel',
+        className: 'btn btn-cancel',
+        click: function () {
+            // do your stuff
         }
-    });
-</pre>
+    }, {
+        title: 'Cancel',
+        className: 'btn btn-cancel',
+        click: function () {
+            // do other stuff
+        }
+    }]
+});
+```
+
+### Lock modal
+```javascript
+var myModal = new Modal({
+    title: "You can't get out!",
+    locked: true
+});
+```
+
+### Very long modal
+```javascript
+var myModal = new Modal({
+    title: 'very long modal',
+    autoDimensions: false,
+    width: 300,
+    height: 2000
+});
+```

@@ -22,6 +22,30 @@
                     s[i].href = s[i].href.split('?')[0] + '?' + Math.random();
                 }
             }
+            
+            a = new Modal({
+                title: 'imagem bonita :)',
+                url: 'http://' + window.location.hostname + '/modal/server.php',
+                buttons: [{
+                    title: 'Close',
+                    click: function () {
+                        a.close();
+                    },
+                }, {
+                    title: 'update',
+                    click: function () {
+                        a.update({
+                            title: 'Novo título :)'
+                        });
+                    }
+                }]
+                // html: '<div id="sss">sd asdsa dasdasdasd adas</div>'
+            });
+            document.body.querySelectorAll('.fire-modal')[0].onclick = function () {
+                a.show();
+            }
+
+            a._remove(document.createElement('script'));
         </script>
     </body>
 </html>

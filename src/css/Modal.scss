@@ -1,11 +1,6 @@
 $mask-color: rgba(255, 255, 255, 0.8);
 
-.hide-modal {
-    position: absolute;    // doesn't affect layout
-    visibility: hidden;    // not visible, but normal size
-    left: -2000px;         // won't affect scrollbars
-    top: -2000px;          // won't affect scrollbars
-}
+// Utilities
 .modal-mask {
     position: fixed;
     width: 100%;
@@ -15,16 +10,30 @@ $mask-color: rgba(255, 255, 255, 0.8);
     left: 0;
     background: $mask-color;
 }
+.modal-loading {
+    text-align: center;
+    display: block;
+    padding: 40px 0;
+}
+.model-hidden-element {
+    display: none;
+}
 
+.hide-modal {
+    position: absolute;    // doesn't affect layout
+    visibility: hidden;    // not visible, but normal size
+    left: -2000px;         // won't affect scrollbars
+    top: -2000px;          // won't affect scrollbars
+}
+
+// modal
 .modal-container {
     background: white;
     border: 1px solid #ccc;
-
     width: 500px;
     height: 100px;
     padding: 20px;
     z-index: 901;
-
     margin: auto;
     position: absolute;
     left: 0;
@@ -40,7 +49,6 @@ $mask-color: rgba(255, 255, 255, 0.8);
         text-transform: uppercase;
         line-height: 120%;
         padding: 10px 0;
-        // border-bottom: 1px solid #999;
     }
 
 .modal-close {
@@ -106,12 +114,3 @@ $mask-color: rgba(255, 255, 255, 0.8);
         .modal-button:active {
             background-color: rgb(150, 150, 150);
         }
-
-.modal-loading {
-    text-align: center;
-    display: block;
-    padding: 40px 0;
-}
-.model-hidden-element {
-    display: none;
-}

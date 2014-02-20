@@ -1,4 +1,5 @@
 /*jslint browser: true, nomen: true */
+/*global ActiveXObject*/
 
 function Modal(userOptions) {
     'use strict';
@@ -40,9 +41,9 @@ function Modal(userOptions) {
 /**
  * merges obj_a with obj_b, keeping only the keys of the obj_a and replacing the
  * values found in obj_b
- * @param  object obj_a source object
- * @param  object obj_b new data
- * @return object
+ * @param  {Object} obj_a source object
+ * @param  {Object} obj_b new data
+ * @return {Object}
  */
 Modal.prototype._merge = function (obj_a, obj_b) {
     'use strict';
@@ -60,9 +61,9 @@ Modal.prototype._merge = function (obj_a, obj_b) {
 
 /**
  * shortcut to create a div with a class prefix "modal-"
- * @param  string className 
- * @param  string content   valid HTML
- * @return object
+ * @param  {String} className 
+ * @param  {String} content   valid HTML
+ * @return {Object}
  */
 Modal.prototype._create = function (className, content) {
     'use strict';
@@ -87,13 +88,15 @@ Modal.prototype._create = function (className, content) {
 Modal.prototype._validate = function () {
     'use strict';
 
-    var options = this.options;
-    
+    var options = this.options,
+        numButtons = 0,
+        i = 0;
+
     // autoDimenions
     if (typeof options.autoDimension !== 'boolean') {
         throw "autoDimension MUST be boolean";
     }
-    
+
     // width and height
     if (options.autoDimension === true) {
         options.width = '0px';
@@ -102,39 +105,46 @@ Modal.prototype._validate = function () {
         options.width = (typeof options.width === 'number') ? options.width + 'px' : options.width;
         options.height = (typeof options.height === 'number') ? options.height + 'px' : options.height;
     }
-    
+
     if (typeof options.width !== 'string') {
         throw "width MUST be a string or a number";
-    } else if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
-        throw "width MUST be in pt or % units"; // @todo add support to more units in the validation
+    }
+    if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
+        throw "width MUST be in pt or % units";
     }
 
     if (typeof options.height !== 'string') {
         throw "height MUST be a string or a number";
-    } else if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
-        throw "height MUST be in pt or % units"; // @todo add support to more units in the validation
+    }
+    if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
+        throw "height MUST be in pt or % units";
     }
 
     // padding
     options.padding = (typeof options.padding === 'number') ? options.padding + 'px' : options.padding;
     if (typeof options.padding !== 'string') {
         throw "padding MUST be a string or a number";
-    } else if (options.padding.indexOf('%') === -1 && options.padding.indexOf('px') === -1) {
-        throw "padding MUST be in pt or % units"; // @todo add support to more units in the validation
+    }
+    if (options.padding.indexOf('%') === -1 && options.padding.indexOf('px') === -1) {
+        throw "padding MUST be in pt or % units";
     }
 
+    // locked
     if (typeof options.locked !== 'boolean') {
         throw "locked MUST be a boolean";
     }
 
+    // autoShow
     if (typeof options.autoShow !== 'boolean') {
         throw "autoshow MUST be a boolean";
     }
 
+    // title
     if (typeof options.title !== 'string') {
         throw "title MUST be string";
     }
 
+    // html
     if (typeof options.html !== 'string') {
         throw "html MUST be string";
     }
@@ -143,30 +153,37 @@ Modal.prototype._validate = function () {
         throw "url MUST be string";
     }
 
+    // string
+    if (typeof options.url !== 'string') {
+        throw "url MUST be string";
+    }
+
+    // onShow
     if (options.onShow !== false && typeof options.onShow !== 'function') {
         throw "onShow MUST be function";
     }
 
+    // onClose
     if (options.onClose !== false && typeof options.onClose !== 'function') {
         throw "onClose MUST be function";
     }
 
+    // beforeClose
     if (options.beforeClose !== false && typeof options.beforeClose !== 'function') {
         throw "beforeClose MUST be function";
     }
 
+    // url
     if (!options.html.length && !options.url.length) {
         throw "you MUST provide a html content or a URL";
     }
 
+    // buttons
     if (typeof options.buttons !== 'object' || typeof options.buttons.length !== 'number') {
         throw "buttons MUST be array";
     }
-
-    var numButtons = options.buttons.length,
-        i = 0;
-
-    for (i = 0; i < numButtons; i++) {
+    numButtons = options.buttons.length;
+    for (i = 0; i < numButtons; i += 1) {
         // buttons must have title and click :)
         if (typeof options.buttons[i].title !== 'string' || !options.buttons[i].title.length) {
             throw 'button ' + i + ' has a invalid title (MUST be a non empty string)';
@@ -180,40 +197,42 @@ Modal.prototype._validate = function () {
             throw 'button ' + i + ' has a invalid className (MUST be a string)';
         }
     }
-}
+};
 
 /**
  * set the modal dimensions and position on screen
  */
 Modal.prototype._align = function () {
-    if (this.options.padding) {
-        this._elements.container.style.padding = this.options.padding;
-    }
+    'use strict';
+
+    var width = 0,
+        height = 0,
+        get_metrics = {},
+        i = 0;
+
+    // padding
+    this._elements.container.style.padding = this.options.padding;
+
     // set width
     if (!this.options.autoDimension) {
         this._elements.container.style.width = this.options.width;
         this._elements.container.style.height = this.options.height;
     } else {
-        var height = 0,
-            width = 0,
-            get_metrics = {
-                width: ['content', 'loading'],
-                height: ['content', 'header', 'loading', 'buttons_container']
-            },
-            i = 0;
+        get_metrics = {
+            width: ['content', 'loading'],
+            height: ['content', 'header', 'loading', 'buttons_container']
+        };
 
         this._elements.container.className += ' hide-modal';
         document.body.appendChild(this._elements.container);
 
-        for (i = 0; i < get_metrics.width.length; i++) {
+        for (i = 0; i < get_metrics.width.length; i += 1) {
             if (this._elements.hasOwnProperty(get_metrics.width[i])) {
                 width += this._elements[get_metrics.width[i]].offsetWidth;
-                console.log(get_metrics.width[i]);
-                console.log(this._elements[get_metrics.width[i]].offsetWidth);
             }
         }
 
-        for (i = 0; i < get_metrics.height.length; i++) {
+        for (i = 0; i < get_metrics.height.length;  i += 1) {
             if (this._elements.hasOwnProperty(get_metrics.height[i])) {
                 height += this._elements[get_metrics.height[i]].offsetHeight;
             }
@@ -229,98 +248,102 @@ Modal.prototype._align = function () {
         if (height < window.outerHeight) {
             this._elements.container.className += ' modal-centered';
         } else {
+            this._elements.container.className.replace('modal-centered', '');
             this._elements.container.style.marginTop = '30px';
         }
     }
-}
+};
 
 /**
  * [_build description]
  */
 Modal.prototype._build = function () {
+    'use strict';
+
     var options = this.options,
-        self = this;
+        self = this,
+        numButtons = options.buttons.length,
+        i = 0;
 
-    if (options.title.length) {
-        this._elements.header = this._create('header', options.title);
-        this._elements.container.appendChild(
-            this._elements.header
-        );
-    }
+    if (options.url.length) {
+        // if is a ajax request, don't show anything but loading message
+        this._elements.loading = this._create('loading', this.options.loading_text);
+        this._elements.container.appendChild(this._elements.loading);
+        this._getContentFromURL(options.url, function (html) {
+            // if user closed the modal before load, don't do anything
+            this.update({
+                url: '',
+                html: html,
+                autoShow: (this._visible)
+            });
+        });
+    } else {
+        if (options.title.length) {
+            this._elements.header = this._create('header', options.title);
+            this._elements.container.appendChild(
+                this._elements.header
+            );
+        }
 
-    if (!options.locked) {
-        this._elements.close = this._create('close', 'x');
-        this._elements.container.appendChild(
-            this._elements.close
-        );
-    }
+        if (!options.locked) {
+            this._elements.close = this._create('close', 'x');
+            this._elements.container.appendChild(
+                this._elements.close
+            );
 
-    if (options.html.length) {
+            this._elements.close.onclick = function () {
+                self.close();
+            };
+        }
+
         this._elements.content = this._create('content', options.html);
         this._elements.container.appendChild(
             this._elements.content
         );
-    } else {
-        this._elements.loading = this._create('loading', options.loading_text);
-        this._elements.container.appendChild(
-            this._elements.loading
-        );
-        this._getContentFromURL(options.url, function (html) {
-            if (this._visible) {
-                this.update({
-                    url: null,
-                    html: html
-                });
-            }
-        });
-    }
 
-    // buttons
-    var numButtons = options.buttons.length;
-    if (numButtons) {
-        this._elements.buttons_container = this._create('buttons-container');
-        this._elements.buttons = [];
+        // buttons
+        if (numButtons) {
+            this._elements.buttons_container = this._create('buttons-container');
+            this._elements.buttons = [];
 
-        for (var i = 0; i < numButtons; i++) {
-            this._elements.buttons.push(
-                document.createElement('button')
-            );
-            this._elements.buttons[i].innerHTML = options.buttons[i].title;
-            if (options.buttons[i].hasOwnProperty('className')) {
-                this._elements.buttons[i].className = options.buttons[i].className;
-            } else {
-                this._elements.buttons[i].className = 'modal-button';
+            for (i = 0; i < numButtons; i += 1) {
+                this._elements.buttons.push(
+                    document.createElement('button')
+                );
+                this._elements.buttons[i].innerHTML = options.buttons[i].title;
+                if (options.buttons[i].hasOwnProperty('className')) {
+                    this._elements.buttons[i].className = options.buttons[i].className;
+                } else {
+                    this._elements.buttons[i].className = 'modal-button';
+                }
+
+                this._elements.buttons[i].onclick = options.buttons[i].click;
+                this._elements.buttons_container.appendChild(this._elements.buttons[i]);
             }
 
-            this._elements.buttons[i].onclick = options.buttons[i].click;
-            this._elements.buttons_container.appendChild(this._elements.buttons[i]);
+            this._elements.container.appendChild(this._elements.buttons_container);
         }
-
-        // @todo show only loading if remote data
-
-        this._elements.container.appendChild(this._elements.buttons_container);
     }
 
-    // configure events
+    // configure mask events
     if (!options.locked) {
-        this._elements.close.onclick = function () {
-            self.close();
-        }
-
         this._elements.mask.onclick = function () {
             self.close();
-        }
+        };
     }
 
     this._align();
-}
+};
 
 /**
- * get the HTML content via AJAX
- * @param  string   url
- * @param  function callback
+ * get the HTML content via xhr
+ * @param {String} url
+ * @param {Function} callback
+ * @returns {String}
  */
 Modal.prototype._getContentFromURL = function (url, callback) {
+    'use strict';
+
     var self = this,
         xhr;
     if (window.XMLHttpRequest) { // Mozilla, Safari, ...
@@ -333,15 +356,19 @@ Modal.prototype._getContentFromURL = function (url, callback) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             callback.call(self, xhr.responseText);
         }
-    }
+    };
 
-    xhr.open("GET", url, true); 
+    xhr.open("GET", url, true);
     xhr.send(null);
+};
 
-}
-
+/**
+ * insert mask and container in the body
+ */
 Modal.prototype.show = function () {
-    if (document.body.querySelectorAll('.modal-mask'))  {
+    'use strict';
+
+    if (document.body.querySelectorAll('.modal-mask')) {
         document.body.appendChild(this._elements.mask);
     }
     document.body.appendChild(this._elements.container);
@@ -349,20 +376,29 @@ Modal.prototype.show = function () {
     if (this.options.onShow) {
         this.options.onShow();
     }
-}
+};
 
+/**
+ * allow change all configs and show new data
+ * @param {Object} options
+ */
 Modal.prototype.update = function (options) {
+    'use strict';
+
     this.options = this._merge(this.options, options);
-    // this._elements.container.remove();
+    this._validate();
     this._remove(this._elements.container);
     this._elements.container.innerHTML = '';
     this._build();
-    this.show();
-}
+
+    if (this.options.autoShow) {
+        this.show();
+    }
+};
 
 Modal.prototype.close = function () {
-    // this._elements.container.remove();
-    // this._elements.mask.remove();
+    'use strict';
+
     var returnBeforeClose = true;
     if (this.options.beforeClose) {
         returnBeforeClose = (this.options.beforeClose() === false) ? false : true;
@@ -380,45 +416,22 @@ Modal.prototype.close = function () {
     }
 
     this._visible = false;
-}
+};
 
+/**
+ * remove elements from body
+ */
 Modal.prototype._remove = function () {
+    'use strict';
+
     var i = 0,
         al = arguments.length;
 
-    for (var i = 0; i < al; i++) {
+    for (i = 0; i < al; i += 1) {
         try {
             document.body.removeChild(arguments[i]);
-        } catch (excpetion) {
-            if (excpetion.code === 8) {
-                console.log('Element not found');
-            }
+        } catch (ignore) {
+            // just in case
         }
     }
-}
-
-
-
-/** TEST **/
-a = new Modal({
-    title: 'imagem bonita :)',
-    url: 'http://' + window.location.hostname + '/modal/server.php',
-    buttons: [{
-        title: 'Close',
-        click: function () {
-            // a.close();
-            console.log(this);
-        },
-    }, {
-        title: 'update',
-        click: function () {
-            a.update({
-                title: 'Novo título :)'
-            });
-        }
-    }]
-    // html: '<div id="sss">sd asdsa dasdasdasd adas</div>'
-});
-document.body.querySelectorAll('.fire-modal')[0].onclick = function () {
-    a.show();
-}
+};
