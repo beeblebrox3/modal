@@ -212,11 +212,19 @@ Modal.prototype._align = function () {
 
     // padding
     this._elements.container.style.padding = this.options.padding;
+    if (!this._elements.hasOwnProperty('header')
+            && !this._elements.hasOwnProperty('buttons_container')
+            && this.options.padding === '0px') {
+        this._elements.content.style.padding = '0px';
+    }
 
     // set width
     if (!this.options.autoDimension) {
         this._elements.container.style.width = this.options.width;
         this._elements.container.style.height = this.options.height;
+
+        width = this.options.width;
+        height = this.options.height;
     } else {
         get_metrics = {
             width: ['content', 'loading'],
@@ -232,6 +240,10 @@ Modal.prototype._align = function () {
             }
         }
 
+        if (this._elements.hasOwnProperty('header')) {
+            this._elements.header.style.width = width + 'px';
+        }
+
         for (i = 0; i < get_metrics.height.length;  i += 1) {
             if (this._elements.hasOwnProperty(get_metrics.height[i])) {
                 height += this._elements[get_metrics.height[i]].offsetHeight;
@@ -244,13 +256,13 @@ Modal.prototype._align = function () {
 
         this._elements.container.style.height = height + 'px';
         this._elements.container.style.width = width + 'px';
+    }
 
-        if (height < window.outerHeight) {
-            this._elements.container.className += ' modal-centered';
-        } else {
-            this._elements.container.className.replace('modal-centered', '');
-            this._elements.container.style.marginTop = '30px';
-        }
+    if (height < window.outerHeight) {
+        this._elements.container.className += ' modal-centered';
+    } else {
+        this._elements.container.className.replace('modal-centered', '');
+        this._elements.container.style.top = (document.body.scrollTop + 30) + 'px';
     }
 };
 
