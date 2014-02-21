@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Modal - Demo page</title>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="css/Modal.css" />
+        <link rel="stylesheet" href="css/demo.css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <article>
+                <h1 id="modal">Modal</h1>
+
+                <section>
+                    <h2 id="usage">Usage</h2>
+                    <pre><code class="javascript">var myModal = new Modal(options);</code></pre>
+                </section>
+                
+                <section>
+                    <h2 id="options">Options</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Option</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>width</td>
+                                <td>int or string</td>
+                                <td>0</td>
+                                <td>
+                                    Define the width of modal. You can use a int for px or string to pass px or % units.
+                                    <br> Ex: '10%' or '10px' are valid options.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>height</td>
+                                <td>int or string</td>
+                                <td>0</td>
+                                <td>
+                                    Define the height of modal. You can use a int for px or string to pass px or % units.
+                                    <br> Ex: '10%' or '10px' are valid options.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>padding</td>
+                                <td>int or string</td>
+                                <td>20</td>
+                                <td>Define the padding of modal. You can use a int for px or string to pass px or % units.
+                                    <br> Ex: '10%' or '10px' are valid options.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>autoDimension</td>
+                                <td>boolean</td>
+                                <td>true</td>
+                                <td>When true, the modal will get the width and height of the content plus buttons, title, etc.
+                                    <br /><strong>In that case, your content must have a defined width and height, like a image with width and height defined in CSS or inline</strong>.
+                                    <br />When false, use the width and height provided.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>autoShow</td>
+                                <td>boolean</td>
+                                <td>true</td>
+                                <td>When true, the modal will open when you create it (new Modal(options)). When false, you must use the <code>show()</code> to show the modal.</td>
+                            </tr>
+                            <tr>
+                                <td>locked</td>
+                                <td>boolean</td>
+                                <td>false</td>
+                                <td>When true, click on the mask will not close the modal and the close button will not be rendered.</td>
+                            </tr>
+                            <tr>
+                                <td>title</td>
+                                <td>string</td>
+                                <td>''</td>
+                                <td>Set the title. Try to keep it short ;)</td>
+                            </tr>
+                            <tr>
+                                <td>html</td>
+                                <td>string</td>
+                                <td>''</td>
+                                <td>The content of the modal. Plain text or valid HTML are supported.</td>
+                            </tr>
+                            <tr>
+                                <td>buttons</td>
+                                <td>array</td>
+                                <td>[]</td>
+                                <td>Modal can create buttons and define a callback to the click event.<br>The buttons are specified as objects with the following properties: <strong>title</strong>(string, required), <strong>className</strong>(string, optional) and <strong>click</strong>(function, required).</td>
+                            </tr>
+                            <tr>
+                                <td>url</td>
+                                <td>string</td>
+                                <td>''</td>
+                                <td>When provided, the HTML will be loaded via AJAX</td>
+                            </tr>
+                            <tr>
+                                <td>onShow</td>
+                                <td>function</td>
+                                <td>''</td>
+                                <td>Callback to call after modal be rendered</td>
+                            </tr>
+                            <tr>
+                                <td>beforeClose</td>
+                                <td>function</td>
+                                <td>''</td>
+                                <td>Callback to call just befor close. If it returns false, the Modal will not be closed</td>
+                            </tr>
+                            <tr>
+                                <td>onClose</td>
+                                <td>function</td>
+                                <td>''</td>
+                                <td>Callback to call after close</td>
+                            </tr>
+                            <tr>
+                                <td>loading_text</td>
+                                <td>string</td>
+                                <td>'loading...'</td>
+                                <td>Plain text or HTML to be displayed while the AJAX request is happening when the URL option is used.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                
+                <section>
+                    <h2 id="methods">Methods</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Arguments</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>show()</td>
+                                <td></td>
+                                <td>Show the modal if it is hidden</td>
+                            </tr>
+                            <tr>
+                                <td>close()</td>
+                                <td></td>
+                                <td>Close the modal</td>
+                            </tr>
+                            <tr>
+                                <td>update()</td>
+                                <td>options</td>
+                                <td>Merges options with the current options of the modal and render the updated modal</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                
+                <section class="examples">
+                    <h2 id="examples">Examples</h2>
+                    <h3 id="simple-message">Simple message <small id="test-modal-1">Click to test</small></h3>
+                    
+<pre><code class="javascript">var myModal = new Modal({
+    html: 'Hello world :)'
+});</code></pre>
+
+                    <h3 id="simple-message-with-title">Simple message with title <small id="test-modal-2">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    title: 'Modal with title',
+    html: 'Hello Word :) This modal has a title.'
+});</code></pre>
+                
+                    <h3 id="load-a-image">Load a image <small id="test-modal-3">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    html: '&lt;img src=&quot;http://lorempixel.com/people/720/480&quot; width=&quot;720&quot; height=&quot;480&quot; /&gt;'
+});</code></pre>
+
+                    <h3 id="load-a-remote-data">Load a remote data <small id="test-modal-4">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    title: "REMOTE DATA! YAY :)",
+    url: 'http://site.com/stuff',
+    loading_text: 'wait... worth it'
+});</code></pre>
+
+                    <h3 id="using-buttons">Using buttons <small id="test-modal-5">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    title: 'Buttons',
+    html: 'Click on the bottons above',
+    buttons: [{
+        title: 'Cancel',
+        className: 'btn btn-cancel',
+        click: function () {
+            // do your stuff
+        }
+    }, {
+        title: 'Close',
+        className: 'btn btn-cancel',
+        click: function () {
+            myModal.close();
+        }
+    }]
+});</code></pre>
+
+                    <h3 id="lock-modal">Lock modal <small id="test-modal-6">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    title: "You can't get out!",
+    locked: true
+});</code></pre>
+
+                    <h3 id="very-long-modal">Very long modal <small id="test-modal-7">Click to test</small></h3>
+<pre><code class="javascript">var myModal = new Modal({
+    title: 'very long modal',
+    autoDimensions: false,
+    width: 300,
+    height: 2000
+});</code></pre>
+                    <h3 id="very-long-modal">Using a element of the page <small id="test-modal-8">Click to test</small></h3>
+                    <p>First, put the target element on a hidden containr:</p>
+<pre><code class="html">&lt;div style="display: none">
+    &lt;div id="myElement" style="width: 300px; height: 300px; text-align: center; background: silver;">
+        The element :)
+    &lt;/div>
+&lt;/div></code></pre>
+                    <p>Now, pass the element in the html key:</p>
+<pre><code class="javascript">
+var myModal = new Modal({
+    title: 'Look this element',
+    html: document.querySelector('#myElement')
+});</code></pre>
+
+                    <div style="display: none">
+                        <div id="myElement" style="width: 300px; height: 300px; text-align: center; background: silver;">
+                            The element :)
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </div>
+        
+        <script type="text/javascript" src="js/Modal.js"></script>
+        <script type="text/javascript" src="js/demo.js"></script>
+    </body>
+</html>
