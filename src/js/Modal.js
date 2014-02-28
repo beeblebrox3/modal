@@ -205,65 +205,101 @@ Modal.prototype._validate = function () {
 Modal.prototype._align = function () {
     'use strict';
 
-    var width = 0,
-        height = 0,
-        get_metrics = {},
-        i = 0,
-        use_padding = 0;
-
-    // padding
     this._elements.container.style.padding = this.options.padding;
-    use_padding = parseInt(this.options.padding);
-    if (!this._elements.hasOwnProperty('header') && !this._elements.hasOwnProperty('buttons_container') && this.options.padding === '0px') {
-        this._elements.content.style.padding = '0px';
-    }
 
-    // set width
-    if (!this.options.autoDimension) {
-        this._elements.container.style.width = this.options.width;
-        this._elements.container.style.height = this.options.height;
-
-        width = this.options.width;
-        height = this.options.height;
-    } else {
-        get_metrics = {
-            width: ['content', 'loading'],
-            height: ['content', 'header', 'loading', 'buttons_container']
-        };
-
-        this._elements.container.className += ' hide-modal';
+    if (this.options.autoDimension) {
+        this._elements.container.classList.add('hide-modal');
         document.body.appendChild(this._elements.container);
 
-        for (i = 0; i < get_metrics.width.length; i += 1) {
-            if (this._elements.hasOwnProperty(get_metrics.width[i])) {
-                width += this._elements[get_metrics.width[i]].offsetWidth;
-            }
-        }
+        var width = this._elements.container.offsetWidth,
+            height = this._elements.container.offsetHeight;
 
-        if (this._elements.hasOwnProperty('header')) {
-            this._elements.header.style.width = width + 'px';
-        }
-
-        for (i = 0; i < get_metrics.height.length;  i += 1) {
-            if (this._elements.hasOwnProperty(get_metrics.height[i])) {
-                height += this._elements[get_metrics.height[i]].offsetHeight;
-            }
-        }
-
-        // this._elements.container.remove();
         this._remove(this._elements.container);
-        this._elements.container.className = this._elements.container.className.replace(' hide-modal', '');
+        this._elements.container.style.width = width + 'px';
+        this._elements.container.style.height = height + 'px';
+        this._elements.container.classList.remove('hide-modal');
+    } else {
+        var width = parseInt(this.options.width, 10),
+            height = parseInt(this.options.height, 10);
 
-        this._elements.container.style.height = height + (use_padding * 2) + 'px';
-        this._elements.container.style.width = width + (use_padding * 2) + 'px';
+        this._elements.container.style.width = width + 'px';
+        this._elements.container.style.height = height + 'px';
     }
 
     if (height < window.outerHeight) {
-        this._elements.container.className += ' modal-centered';
+        this._elements.container.classList.add('modal-centered');
     } else {
-        this._elements.container.className.replace('modal-centered', '');
+        this._elements.container.classList.remove('modal-centered');
+        this._elements.container.style.left = 0;
+        this._elements.container.style.right = 0;
+        this._elements.container.style.position = 'absolute';
         this._elements.container.style.top = (document.body.scrollTop + 30) + 'px';
     }
+
+
+
+    // var width = 0,
+    //     height = 0,
+    //     get_metrics = {},
+    //     i = 0,
+    //     use_padding = 0;
+
+    // // padding
+    // this._elements.container.style.padding = this.options.padding;
+    // use_padding = parseInt(this.options.padding, 10);
+    // if (!this._elements.hasOwnProperty('header') && !this._elements.hasOwnProperty('buttons_container') && this.options.padding === '0px') {
+    //     this._elements.content.style.padding = '0px';
+    // }
+
+    // // set width
+    // if (!this.options.autoDimension) {
+    //     this._elements.container.style.width = this.options.width;
+    //     this._elements.container.style.height = this.options.height;
+
+    //     width = parseInt(this.options.width, 10);
+    //     height = parseInt(this.options.height, 10);
+    // } else {
+    //     get_metrics = {
+    //         width: ['content', 'loading'],
+    //         height: ['content', 'header', 'loading', 'buttons_container']
+    //     };
+
+    //     this._elements.container.className += ' hide-modal';
+    //     document.body.appendChild(this._elements.container);
+
+    //     for (i = 0; i < get_metrics.width.length; i += 1) {
+    //         if (this._elements.hasOwnProperty(get_metrics.width[i])) {
+    //             width += this._elements[get_metrics.width[i]].offsetWidth;
+    //         }
+    //     }
+
+    //     if (this._elements.hasOwnProperty('header')) {
+    //         this._elements.header.style.width = width + 'px';
+    //     }
+
+    //     for (i = 0; i < get_metrics.height.length;  i += 1) {
+    //         if (this._elements.hasOwnProperty(get_metrics.height[i])) {
+    //             height += this._elements[get_metrics.height[i]].offsetHeight;
+    //         }
+    //     }
+
+    //     // this._elements.container.remove();
+    //     this._remove(this._elements.container);
+    //     this._elements.container.className = this._elements.container.className.replace(' hide-modal', '');
+
+    //     this._elements.container.style.height = height + (use_padding * 2) + 'px';
+    //     this._elements.container.style.width = width + (use_padding * 2) + 'px';
+    // }
+
+    // if (height < window.outerHeight) {
+    //     this._elements.container.className += ' modal-centered';
+    // } else {
+    //     this._elements.container.className.replace('modal-centered', '');
+    //     this._elements.container.style.top = (document.body.scrollTop + 30) + 'px';
+    // }
+    // 
+    
+
 };
 
 /**

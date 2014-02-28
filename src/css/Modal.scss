@@ -15,14 +15,6 @@ $mask-color: rgba(255, 255, 255, 0.8);
     left: 0;
     background: $mask-color;
 }
-.modal-loading {
-    text-align: center;
-    display: block;
-    padding: 40px 0;
-}
-.model-hidden-element {
-    display: none;
-}
 
 .hide-modal {
     position: absolute;    // doesn't affect layout
@@ -35,36 +27,36 @@ $mask-color: rgba(255, 255, 255, 0.8);
 .modal-container {
     background: white;
     border: 1px solid #ccc;
-    width: 500px;
-    height: 100px;
-    padding: 20px;
+    display: block;
+    // padding: 20px;
+    max-width: 80%;
     z-index: 901;
     margin: auto;
-    position: absolute;
-    left: 0;
-    right: 0;
+    position: fixed;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     @include boxsizing;
 }
-    .modal-container.modal-centered {
-        top: 0;
-        bottom: 0;
-        position: fixed;
-    }
     .modal-header {
         font-size: 30px;
         text-transform: uppercase;
         line-height: 120%;
-        padding: 10px 0;
         clear: both;
         @include boxsizing;
+    }
+
+    .modal-centered {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: fixed;
     }
 
 .modal-close {
     display: inline-block;
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 0px;
+    right: 0px;
     cursor: pointer;
     font-size: 20px;
     width: 20px;
@@ -81,14 +73,17 @@ $mask-color: rgba(255, 255, 255, 0.8);
     .modal-close:hover {
         background-color: rgb(200, 200, 200);
     }
+
 .modal-content{
-    display: table-cell;
+    display: block;
     position: relative;
-    padding: 15px 0;
-    clear: both;
+    padding: 20px 0;
+    // background: red;
     @include boxsizing;
 }
 .modal-buttons-container {
+    display: block;
+    position: relative;
     text-align: right;
     @include boxsizing;
 }
