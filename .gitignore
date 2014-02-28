@@ -4,3 +4,4 @@ nbproject
 .settings
 .idea
 *.komodoproject
+src/index.html

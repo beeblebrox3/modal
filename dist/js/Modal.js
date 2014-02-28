@@ -1,1 +1,454 @@
-function Modal(t){"use strict";var e={width:0,height:0,padding:20,autoDimension:!0,autoShow:!0,locked:!1,title:"",html:"",buttons:[],url:"",onShow:!1,beforeClose:!1,onClose:!1,loading_text:"loading..."};this.options=this._merge(e,t),this._validate(),this._elements={mask:this._create("mask"),container:this._create("container")},this._visible=!1,this._build(),this.options.autoShow&&this.show()}Modal.prototype._merge=function(t,e){"use strict";var n={},o=0;for(o in t)t.hasOwnProperty(o)&&(n[o]=e.hasOwnProperty(o)?e[o]:t[o]);return n},Modal.prototype._create=function(t,e){"use strict";if("string"!=typeof t||!t.length)throw"className MUST be a non empty string";var n=document.createElement("div");return n.className="modal-"+t,"string"==typeof e&&e.length&&(n.innerHTML=e),n},Modal.prototype._validate=function(){"use strict";var t=this.options,e=0,n=0;if("boolean"!=typeof t.autoDimension)throw"autoDimension MUST be boolean";if(t.autoDimension===!0?(t.width="0px",t.height="0px"):(t.width="number"==typeof t.width?t.width+"px":t.width,t.height="number"==typeof t.height?t.height+"px":t.height),"string"!=typeof t.width)throw"width MUST be a string or a number";if(-1===t.width.indexOf("%")&&-1===t.width.indexOf("px"))throw"width MUST be in pt or % units";if("string"!=typeof t.height)throw"height MUST be a string or a number";if(-1===t.height.indexOf("%")&&-1===t.height.indexOf("px"))throw"height MUST be in pt or % units";if(t.padding="number"==typeof t.padding?t.padding+"px":t.padding,"string"!=typeof t.padding)throw"padding MUST be a string or a number";if(-1===t.padding.indexOf("%")&&-1===t.padding.indexOf("px"))throw"padding MUST be in pt or % units";if("boolean"!=typeof t.locked)throw"locked MUST be a boolean";if("boolean"!=typeof t.autoShow)throw"autoshow MUST be a boolean";if("string"!=typeof t.title)throw"title MUST be string";if("string"!=typeof t.html&&"object"!=typeof t.html)throw"html MUST be string or a HTML Object";if("string"!=typeof t.url)throw"url MUST be string";if("string"!=typeof t.url)throw"url MUST be string";if(t.onShow!==!1&&"function"!=typeof t.onShow)throw"onShow MUST be function";if(t.onClose!==!1&&"function"!=typeof t.onClose)throw"onClose MUST be function";if(t.beforeClose!==!1&&"function"!=typeof t.beforeClose)throw"beforeClose MUST be function";if("string"==typeof t.html&&!t.html.length&&!t.url.length)throw"you MUST provide a html content or a URL";if("object"!=typeof t.buttons||"number"!=typeof t.buttons.length)throw"buttons MUST be array";for(e=t.buttons.length,n=0;e>n;n+=1){if("string"!=typeof t.buttons[n].title||!t.buttons[n].title.length)throw"button "+n+" has a invalid title (MUST be a non empty string)";if("function"!=typeof t.buttons[n].click)throw"button "+n+" has a invalid callback for click event";if(t.buttons[n].hasOwnProperty("className")&&"string"!=typeof t.buttons[n].className)throw"button "+n+" has a invalid className (MUST be a string)"}},Modal.prototype._align=function(){"use strict";var t=0,e=0,n={},o=0;if(this._elements.container.style.padding=this.options.padding,this._elements.hasOwnProperty("header")||this._elements.hasOwnProperty("buttons_container")||"0px"!==this.options.padding||(this._elements.content.style.padding="0px"),this.options.autoDimension){for(n={width:["content","loading"],height:["content","header","loading","buttons_container"]},this._elements.container.className+=" hide-modal",document.body.appendChild(this._elements.container),o=0;o<n.width.length;o+=1)this._elements.hasOwnProperty(n.width[o])&&(t+=this._elements[n.width[o]].offsetWidth);for(this._elements.hasOwnProperty("header")&&(this._elements.header.style.width=t+"px"),o=0;o<n.height.length;o+=1)this._elements.hasOwnProperty(n.height[o])&&(e+=this._elements[n.height[o]].offsetHeight);this._remove(this._elements.container),this._elements.container.className=this._elements.container.className.replace(" hide-modal",""),this._elements.container.style.height=e+"px",this._elements.container.style.width=t+"px"}else this._elements.container.style.width=this.options.width,this._elements.container.style.height=this.options.height,t=this.options.width,e=this.options.height;e<window.outerHeight?this._elements.container.className+=" modal-centered":(this._elements.container.className.replace("modal-centered",""),this._elements.container.style.top=document.body.scrollTop+30+"px")},Modal.prototype._build=function(){"use strict";var t=this.options,e=this,n=t.buttons.length,o=0;if(t.url.length)this._elements.loading=this._create("loading",this.options.loading_text),this._elements.container.appendChild(this._elements.loading),this._getContentFromURL(t.url,function(t){this.update({url:"",html:t,autoShow:this._visible})});else if(t.title.length&&(this._elements.header=this._create("header",t.title),this._elements.container.appendChild(this._elements.header)),t.locked||(this._elements.close=this._create("close","x"),this._elements.container.appendChild(this._elements.close),this._elements.close.onclick=function(){e.close()}),this._elements.content=this._create("content"),"string"==typeof this.options.html?this._elements.content.innerHTML=this.options.html:this._elements.content.appendChild(this.options.html.cloneNode()),this._elements.container.appendChild(this._elements.content),n){for(this._elements.buttons_container=this._create("buttons-container"),this._elements.buttons=[],o=0;n>o;o+=1)this._elements.buttons.push(document.createElement("button")),this._elements.buttons[o].innerHTML=t.buttons[o].title,this._elements.buttons[o].className=t.buttons[o].hasOwnProperty("className")?t.buttons[o].className:"modal-button",this._elements.buttons[o].onclick=t.buttons[o].click,this._elements.buttons_container.appendChild(this._elements.buttons[o]);this._elements.container.appendChild(this._elements.buttons_container)}t.locked||(this._elements.mask.onclick=function(){e.close()}),this._align()},Modal.prototype._getContentFromURL=function(t,e){"use strict";var n,o=this;window.XMLHttpRequest?n=new XMLHttpRequest:window.ActiveXObject&&(n=new ActiveXObject("Microsoft.XMLHTTP")),n.onreadystatechange=function(){4===n.readyState&&200===n.status&&e.call(o,n.responseText)},n.open("GET",t,!0),n.send(null)},Modal.prototype.show=function(){"use strict";document.body.querySelectorAll(".modal-mask")&&document.body.appendChild(this._elements.mask),document.body.appendChild(this._elements.container),this._visible=!0,this.options.onShow&&this.options.onShow()},Modal.prototype.update=function(t){"use strict";this.options=this._merge(this.options,t),this._validate(),this._remove(this._elements.container),this._elements.container.innerHTML="",this._build(),this.options.autoShow&&this.show()},Modal.prototype.close=function(){"use strict";var t=!0;this.options.beforeClose&&(t=this.options.beforeClose()===!1?!1:!0),t&&(this._remove(this._elements.container,this._elements.mask),this.options.onClose&&this.options.onClose()),this._visible=!1},Modal.prototype._remove=function(){"use strict";var t=0,e=arguments.length;for(t=0;e>t;t+=1)try{document.body.removeChild(arguments[t])}catch(n){}};
+/*jslint browser: true, nomen: true */
+/*global ActiveXObject*/
+
+function Modal(userOptions) {
+    'use strict';
+
+    var defaultOptions = {
+        width:         0,
+        height:        0,
+        padding:       20,
+        autoDimension: true,
+        autoShow:      true,
+        locked:        false,
+        title:         '',
+        html:          '',
+        buttons:       [],
+        url:           '',
+        onShow:        false,
+        beforeClose:   false,
+        onClose:       false,
+        loading_text:  'loading...'
+    };
+
+    this.options = this._merge(defaultOptions, userOptions);
+    this._validate();
+
+    this._elements = {
+        mask:      this._create('mask'),
+        container: this._create('container')
+    };
+
+    this._visible = false;
+
+    this._build();
+
+    if (this.options.autoShow) {
+        this.show();
+    }
+}
+
+/**
+ * merges obj_a with obj_b, keeping only the keys of the obj_a and replacing the
+ * values found in obj_b
+ * @param  {Object} obj_a source object
+ * @param  {Object} obj_b new data
+ * @return {Object}
+ */
+Modal.prototype._merge = function (obj_a, obj_b) {
+    'use strict';
+
+    var response = {},
+        i = 0;
+
+    for (i in obj_a) {
+        if (obj_a.hasOwnProperty(i)) {
+            response[i] = (obj_b.hasOwnProperty(i)) ? obj_b[i] : obj_a[i];
+        }
+    }
+    return response;
+};
+
+/**
+ * shortcut to create a div with a class prefix "modal-"
+ * @param  {String} className 
+ * @param  {String} content   valid HTML
+ * @return {Object}
+ */
+Modal.prototype._create = function (className, content) {
+    'use strict';
+
+    if (typeof className !== 'string' || !className.length) {
+        throw "className MUST be a non empty string";
+    }
+
+    var element = document.createElement('div');
+    element.className = 'modal-' + className;
+
+    if (typeof content === 'string' && content.length) {
+        element.innerHTML = content;
+    }
+
+    return element;
+};
+
+/**
+ * checks if the options are valid
+ */
+Modal.prototype._validate = function () {
+    'use strict';
+
+    var options = this.options,
+        numButtons = 0,
+        i = 0;
+
+    // autoDimenions
+    if (typeof options.autoDimension !== 'boolean') {
+        throw "autoDimension MUST be boolean";
+    }
+
+    // width and height
+    if (options.autoDimension === true) {
+        options.width = '0px';
+        options.height = '0px';
+    } else {
+        options.width = (typeof options.width === 'number') ? options.width + 'px' : options.width;
+        options.height = (typeof options.height === 'number') ? options.height + 'px' : options.height;
+    }
+
+    if (typeof options.width !== 'string') {
+        throw "width MUST be a string or a number";
+    }
+    if (options.width.indexOf('%') === -1 && options.width.indexOf('px') === -1) {
+        throw "width MUST be in pt or % units";
+    }
+
+    if (typeof options.height !== 'string') {
+        throw "height MUST be a string or a number";
+    }
+    if (options.height.indexOf('%') === -1 && options.height.indexOf('px') === -1) {
+        throw "height MUST be in pt or % units";
+    }
+
+    // padding
+    options.padding = (typeof options.padding === 'number') ? options.padding + 'px' : options.padding;
+    if (typeof options.padding !== 'string') {
+        throw "padding MUST be a string or a number";
+    }
+    if (options.padding.indexOf('%') === -1 && options.padding.indexOf('px') === -1) {
+        throw "padding MUST be in pt or % units";
+    }
+
+    // locked
+    if (typeof options.locked !== 'boolean') {
+        throw "locked MUST be a boolean";
+    }
+
+    // autoShow
+    if (typeof options.autoShow !== 'boolean') {
+        throw "autoshow MUST be a boolean";
+    }
+
+    // title
+    if (typeof options.title !== 'string') {
+        throw "title MUST be string";
+    }
+
+    // html
+    if (typeof options.html !== 'string' && typeof options.html !== 'object') {
+        throw "html MUST be string or a HTML Object";
+    }
+
+    if (typeof options.url !== 'string') {
+        throw "url MUST be string";
+    }
+
+    // string
+    if (typeof options.url !== 'string') {
+        throw "url MUST be string";
+    }
+
+    // onShow
+    if (options.onShow !== false && typeof options.onShow !== 'function') {
+        throw "onShow MUST be function";
+    }
+
+    // onClose
+    if (options.onClose !== false && typeof options.onClose !== 'function') {
+        throw "onClose MUST be function";
+    }
+
+    // beforeClose
+    if (options.beforeClose !== false && typeof options.beforeClose !== 'function') {
+        throw "beforeClose MUST be function";
+    }
+
+    // url
+    if ((typeof options.html === 'string' && !options.html.length) && !options.url.length) {
+        throw "you MUST provide a html content or a URL";
+    }
+
+    // buttons
+    if (typeof options.buttons !== 'object' || typeof options.buttons.length !== 'number') {
+        throw "buttons MUST be array";
+    }
+    numButtons = options.buttons.length;
+    for (i = 0; i < numButtons; i += 1) {
+        // buttons must have title and click :)
+        if (typeof options.buttons[i].title !== 'string' || !options.buttons[i].title.length) {
+            throw 'button ' + i + ' has a invalid title (MUST be a non empty string)';
+        }
+
+        if (typeof options.buttons[i].click !== 'function') {
+            throw 'button ' + i + ' has a invalid callback for click event';
+        }
+
+        if (options.buttons[i].hasOwnProperty('className') && typeof options.buttons[i].className !== 'string') {
+            throw 'button ' + i + ' has a invalid className (MUST be a string)';
+        }
+    }
+};
+
+/**
+ * set the modal dimensions and position on screen
+ */
+Modal.prototype._align = function () {
+    'use strict';
+
+    var width = 0,
+        height = 0,
+        get_metrics = {},
+        i = 0,
+        use_padding = 0;
+
+    // padding
+    this._elements.container.style.padding = this.options.padding;
+    use_padding = parseInt(this.options.padding);
+    if (!this._elements.hasOwnProperty('header') && !this._elements.hasOwnProperty('buttons_container') && this.options.padding === '0px') {
+        this._elements.content.style.padding = '0px';
+    }
+
+    // set width
+    if (!this.options.autoDimension) {
+        this._elements.container.style.width = this.options.width;
+        this._elements.container.style.height = this.options.height;
+
+        width = this.options.width;
+        height = this.options.height;
+    } else {
+        get_metrics = {
+            width: ['content', 'loading'],
+            height: ['content', 'header', 'loading', 'buttons_container']
+        };
+
+        // this._elements.container.className += ' hide-modal';
+        document.body.appendChild(this._elements.container);
+
+        for (i = 0; i < get_metrics.width.length; i += 1) {
+            if (this._elements.hasOwnProperty(get_metrics.width[i])) {
+                width += this._elements[get_metrics.width[i]].offsetWidth;
+            }
+        }
+
+        if (this._elements.hasOwnProperty('header')) {
+            this._elements.header.style.width = width + 'px';
+        }
+
+        for (i = 0; i < get_metrics.height.length;  i += 1) {
+            if (this._elements.hasOwnProperty(get_metrics.height[i])) {
+                height += this._elements[get_metrics.height[i]].offsetHeight;
+            }
+        }
+
+        // this._elements.container.remove();
+        this._remove(this._elements.container);
+        this._elements.container.className = this._elements.container.className.replace(' hide-modal', '');
+
+        this._elements.container.style.height = height + (use_padding * 2) + 'px';
+        this._elements.container.style.width = width + (use_padding * 2) + 'px';
+    }
+
+    if (height < window.outerHeight) {
+        this._elements.container.className += ' modal-centered';
+    } else {
+        this._elements.container.className.replace('modal-centered', '');
+        this._elements.container.style.top = (document.body.scrollTop + 30) + 'px';
+    }
+};
+
+/**
+ * [_build description]
+ */
+Modal.prototype._build = function () {
+    'use strict';
+
+    var options = this.options,
+        self = this,
+        numButtons = options.buttons.length,
+        i = 0;
+
+    if (options.url.length) {
+        // if is a ajax request, don't show anything but loading message
+        this._elements.loading = this._create('loading', this.options.loading_text);
+        this._elements.container.appendChild(this._elements.loading);
+        this._getContentFromURL(options.url, function (html) {
+            // if user closed the modal before load, don't do anything
+            this.update({
+                url: '',
+                html: html,
+                autoShow: (this._visible)
+            });
+        });
+    } else {
+        if (options.title.length) {
+            this._elements.header = this._create('header', options.title);
+            this._elements.container.appendChild(
+                this._elements.header
+            );
+        }
+
+        if (!options.locked) {
+            this._elements.close = this._create('close', 'x');
+            this._elements.container.appendChild(
+                this._elements.close
+            );
+
+            this._elements.close.onclick = function () {
+                self.close();
+            };
+        }
+
+        this._elements.content = this._create('content');
+        if (typeof this.options.html === 'string') {
+            this._elements.content.innerHTML = this.options.html;
+        } else {
+            this._elements.content.appendChild(this.options.html.cloneNode());
+        }
+        this._elements.container.appendChild(
+            this._elements.content
+        );
+
+        // buttons
+        if (numButtons) {
+            this._elements.buttons_container = this._create('buttons-container');
+            this._elements.buttons = [];
+
+            for (i = 0; i < numButtons; i += 1) {
+                this._elements.buttons.push(
+                    document.createElement('button')
+                );
+                this._elements.buttons[i].innerHTML = options.buttons[i].title;
+                if (options.buttons[i].hasOwnProperty('className')) {
+                    this._elements.buttons[i].className = options.buttons[i].className;
+                } else {
+                    this._elements.buttons[i].className = 'modal-button';
+                }
+
+                this._elements.buttons[i].onclick = options.buttons[i].click;
+                this._elements.buttons_container.appendChild(this._elements.buttons[i]);
+            }
+
+            this._elements.container.appendChild(this._elements.buttons_container);
+        }
+    }
+
+    // configure mask events
+    if (!options.locked) {
+        this._elements.mask.onclick = function () {
+            self.close();
+        };
+    }
+
+    this._align();
+};
+
+/**
+ * get the HTML content via xhr
+ * @param {String} url
+ * @param {Function} callback
+ * @returns {String}
+ */
+Modal.prototype._getContentFromURL = function (url, callback) {
+    'use strict';
+
+    var self = this,
+        xhr;
+    if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) { // IE 8 and older
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            callback.call(self, xhr.responseText);
+        }
+    };
+
+    xhr.open("GET", url, true);
+    xhr.send(null);
+};
+
+/**
+ * insert mask and container in the body
+ */
+Modal.prototype.show = function () {
+    'use strict';
+
+    if (document.body.querySelectorAll('.modal-mask')) {
+        document.body.appendChild(this._elements.mask);
+    }
+    document.body.appendChild(this._elements.container);
+    this._visible = true;
+    if (this.options.onShow) {
+        this.options.onShow();
+    }
+};
+
+/**
+ * allow change all configs and show new data
+ * @param {Object} options
+ */
+Modal.prototype.update = function (options) {
+    'use strict';
+
+    this.options = this._merge(this.options, options);
+    this._validate();
+    this._remove(this._elements.container);
+    this._elements.container.innerHTML = '';
+    this._build();
+
+    if (this.options.autoShow) {
+        this.show();
+    }
+};
+
+Modal.prototype.close = function () {
+    'use strict';
+
+    var returnBeforeClose = true;
+    if (this.options.beforeClose) {
+        returnBeforeClose = (this.options.beforeClose() === false) ? false : true;
+    }
+
+    if (returnBeforeClose) {
+        this._remove(
+            this._elements.container,
+            this._elements.mask
+        );
+
+        if (this.options.onClose) {
+            this.options.onClose();
+        }
+    }
+
+    this._visible = false;
+};
+
+/**
+ * remove elements from body
+ */
+Modal.prototype._remove = function () {
+    'use strict';
+
+    var i = 0,
+        al = arguments.length;
+
+    for (i = 0; i < al; i += 1) {
+        try {
+            document.body.removeChild(arguments[i]);
+        } catch (ignore) {
+            // just in case
+        }
+    }
+};

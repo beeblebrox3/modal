@@ -1,4 +1,9 @@
 $mask-color: rgba(255, 255, 255, 0.8);
+@mixin boxsizing {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
 
 // Utilities
 .modal-mask {
@@ -39,6 +44,7 @@ $mask-color: rgba(255, 255, 255, 0.8);
     left: 0;
     right: 0;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    @include boxsizing;
 }
     .modal-container.modal-centered {
         top: 0;
@@ -51,6 +57,7 @@ $mask-color: rgba(255, 255, 255, 0.8);
         line-height: 120%;
         padding: 10px 0;
         clear: both;
+        @include boxsizing;
     }
 
 .modal-close {
@@ -79,9 +86,11 @@ $mask-color: rgba(255, 255, 255, 0.8);
     position: relative;
     padding: 15px 0;
     clear: both;
+    @include boxsizing;
 }
 .modal-buttons-container {
     text-align: right;
+    @include boxsizing;
 }
     .modal-buttons-container .modal-button {
         background-color: rgb(221, 221, 221);
@@ -107,6 +116,7 @@ $mask-color: rgba(255, 255, 255, 0.8);
         vertical-align: middle;
         white-space: nowrap;
         margin-right: 10px;
+        @include boxsizing;
     }
         .modal-button:last-child {
             margin-right: 0;
