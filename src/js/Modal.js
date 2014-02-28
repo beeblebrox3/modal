@@ -208,10 +208,12 @@ Modal.prototype._align = function () {
     var width = 0,
         height = 0,
         get_metrics = {},
-        i = 0;
+        i = 0,
+        use_padding = 0;
 
     // padding
     this._elements.container.style.padding = this.options.padding;
+    use_padding = parseInt(this.options.padding);
     if (!this._elements.hasOwnProperty('header') && !this._elements.hasOwnProperty('buttons_container') && this.options.padding === '0px') {
         this._elements.content.style.padding = '0px';
     }
@@ -252,8 +254,8 @@ Modal.prototype._align = function () {
         this._remove(this._elements.container);
         this._elements.container.className = this._elements.container.className.replace(' hide-modal', '');
 
-        this._elements.container.style.height = height + 'px';
-        this._elements.container.style.width = width + 'px';
+        this._elements.container.style.height = height + (use_padding * 2) + 'px';
+        this._elements.container.style.width = width + (use_padding * 2) + 'px';
     }
 
     if (height < window.outerHeight) {
