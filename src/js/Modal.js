@@ -205,12 +205,12 @@ Modal.prototype._validate = function () {
 Modal.prototype._align = function () {
     'use strict';
 
-    var width, height;
+    var width, height, window_height = window.innerHeight || document.documentElement.clientHeight;
 
     this._elements.container.style.padding = this.options.padding;
 
     if (this.options.autoDimension) {
-        this._elements.container.classList.add('hide-modal');
+        this._elements.container.className += ' hide-modal';
         document.body.appendChild(this._elements.container);
 
         width = this._elements.container.offsetWidth;
@@ -219,7 +219,7 @@ Modal.prototype._align = function () {
         this._remove(this._elements.container);
         this._elements.container.style.width = width + 'px';
         this._elements.container.style.height = height + 'px';
-        this._elements.container.classList.remove('hide-modal');
+        this._elements.container.className = this._elements.container.className.replace('hide-modal', '');
     } else {
         width = parseInt(this.options.width, 10);
         height = parseInt(this.options.height, 10);
@@ -228,10 +228,10 @@ Modal.prototype._align = function () {
         this._elements.container.style.height = height + 'px';
     }
 
-    if (height < window.outerHeight) {
-        this._elements.container.classList.add('modal-centered');
+    if (height < window_height) {
+        this._elements.container.className += ' modal-centered';
     } else {
-        this._elements.container.classList.remove('modal-centered');
+        this._elements.container.className = this._elements.container.className.replace('modal-centered', '');
         this._elements.container.style.left = 0;
         this._elements.container.style.right = 0;
         this._elements.container.style.position = 'absolute';

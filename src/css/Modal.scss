@@ -1,4 +1,7 @@
-$mask-color: rgba(255, 255, 255, 0.8);
+@mixin mask-color {
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,.8);
+}
 @mixin boxsizing {
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
@@ -13,7 +16,7 @@ $mask-color: rgba(255, 255, 255, 0.8);
     z-index: 900;
     top: 0;
     left: 0;
-    background: $mask-color;
+    @include mask-color;
 }
 
 .hide-modal {
@@ -60,7 +63,6 @@ $mask-color: rgba(255, 255, 255, 0.8);
     cursor: pointer;
     font-size: 20px;
     width: 20px;
-    height: 20px;
     line-height: 20px;
     text-align: center;
     padding: 2px;
