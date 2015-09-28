@@ -221,11 +221,8 @@ Modal.prototype._align = function () {
         this._elements.container.style.height = height + 'px';
         this._elements.container.className = this._elements.container.className.replace('hide-modal', '');
     } else {
-        width = parseInt(this.options.width, 10);
-        height = parseInt(this.options.height, 10);
-
-        this._elements.container.style.width = width + 'px';
-        this._elements.container.style.height = height + 'px';
+        this._elements.container.style.width = this.options.width;
+        this._elements.container.style.height = this.options.height;
     }
 
     if (height < window_height) {
