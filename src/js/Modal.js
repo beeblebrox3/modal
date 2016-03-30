@@ -18,7 +18,8 @@ function Modal(userOptions) {
         onShow:        false,
         beforeClose:   false,
         onClose:       false,
-        loading_text:  'loading...'
+        loading_text:  'loading...',
+        escape:  false
     };
 
     this.options = this._merge(defaultOptions, userOptions);
@@ -197,7 +198,14 @@ Modal.prototype._validate = function () {
             throw 'button ' + i + ' has a invalid className (MUST be a string)';
         }
     }
+
+    // escape
+    if (typeof options.escape !== 'boolean') {
+        throw "escape MUST be a boolean";
+    }
 };
+
+Modal.prototype._subscribed = {};
 
 /**
  * set the modal dimensions and position on screen
@@ -354,12 +362,30 @@ Modal.prototype._getContentFromURL = function (url, callback) {
  */
 Modal.prototype.show = function () {
     'use strict';
+    var self = this;
+    var content;
+
+    var closeOnEscape = function (event) {
+        if (event.keyCode == 27) {
+            event.stopPropagation();
+            self.close();
+        }
+    };
 
     if (document.body.querySelectorAll('.modal-mask')) {
         document.body.appendChild(this._elements.mask);
     }
     document.body.appendChild(this._elements.container);
     this._visible = true;
+
+    if (this.options.escape) {
+        content = this._elements.container;
+        content.tabIndex = -1;
+        content.focus();
+        content.addEventListener("keydown", closeOnEscape);
+        self._subscribed.closeOnEscape = closeOnEscape;
+    }
+
     if (this.options.onShow) {
         this.options.onShow();
     }
@@ -385,13 +411,20 @@ Modal.prototype.update = function (options) {
 
 Modal.prototype.close = function () {
     'use strict';
+    var self = this;
 
     var returnBeforeClose = true;
     if (this.options.beforeClose) {
         returnBeforeClose = (this.options.beforeClose() === false) ? false : true;
     }
 
+    if (this.options.escape) {
+        this._elements.container.removeEventListener("keydown", self._subscribed.closeOnEscape);
+        delete self._subscribed.closeOnEscape;
+    }
+
     if (returnBeforeClose) {
+
         this._remove(
             this._elements.container,
             this._elements.mask
