@@ -11,6 +11,7 @@ function Modal(userOptions) {
         autoDimension: true,
         autoShow:      true,
         locked:        false,
+        escape:        false,
         title:         '',
         html:          '',
         buttons:       [],
@@ -18,8 +19,7 @@ function Modal(userOptions) {
         onShow:        false,
         beforeClose:   false,
         onClose:       false,
-        loading_text:  'loading...',
-        escape:  false
+        loading_text:  'loading...'
     };
 
     this.options = this._merge(defaultOptions, userOptions);
@@ -134,6 +134,14 @@ Modal.prototype._validate = function () {
     if (typeof options.locked !== 'boolean') {
         throw "locked MUST be a boolean";
     }
+    // escape
+    if (typeof options.escape !== 'boolean') {
+        throw "escape MUST be a boolean";
+    }
+    // locked && escape leads to exception
+    if (options.locked && options.escape) {
+        throw "escape OR locked CAN be true, but not both";
+    }
 
     // autoShow
     if (typeof options.autoShow !== 'boolean') {
@@ -197,11 +205,6 @@ Modal.prototype._validate = function () {
         if (options.buttons[i].hasOwnProperty('className') && typeof options.buttons[i].className !== 'string') {
             throw 'button ' + i + ' has a invalid className (MUST be a string)';
         }
-    }
-
-    // escape
-    if (typeof options.escape !== 'boolean') {
-        throw "escape MUST be a boolean";
     }
 };
 
@@ -365,12 +368,15 @@ Modal.prototype.show = function () {
     var self = this;
     var content;
 
-    var closeOnEscape = function (event) {
+    // Align because the build can happen before the scroll, or window resize!
+    this._align();
+
+    function closeOnEscape (event) {
         if (event.keyCode == 27) {
             event.stopPropagation();
             self.close();
         }
-    };
+    }
 
     if (document.body.querySelectorAll('.modal-mask')) {
         document.body.appendChild(this._elements.mask);
@@ -378,7 +384,8 @@ Modal.prototype.show = function () {
     document.body.appendChild(this._elements.container);
     this._visible = true;
 
-    if (this.options.escape) {
+    // locked must be falsy to allow closeOnEscape 
+    if (this.options.escape && !this.options.locked) {
         content = this._elements.container;
         content.tabIndex = -1;
         content.focus();
