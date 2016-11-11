@@ -230,11 +230,14 @@
 <pre><code class="javascript">
 var myModal = new Modal({
     title: 'Look this element',
+    autoDimension: false,
+    width: 400,
+    height: 400,
     html: document.querySelector('#myElement')
 });</code></pre>
 
                     <div style="display: none">
-                        <div id="myElement" style="width: 300px; height: 300px; text-align: center; background: silver;">
+                        <div id="myElement" style="width: 400px; height: 300px; text-align: center; background: silver;">
                             The element :)
                         </div>
                     </div>

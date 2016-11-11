@@ -101,6 +101,9 @@ document.body.querySelector('#test-modal-8').onclick = function () {
     if (typeof testModal8 === 'undefined') {
         var testModal8 = new Modal({
             title: 'Look this element',
+            autoDimension: false,
+            width: 400,
+            height: 400,
             html: document.querySelector('#myElement')
         });
     } else {
