@@ -293,7 +293,7 @@ Modal.prototype._build = function () {
         if (typeof this.options.html === 'string') {
             this._elements.content.innerHTML = this.options.html;
         } else {
-            this._elements.content.appendChild(this.options.html.cloneNode());
+            this._elements.content.appendChild(this.options.html.cloneNode('deep'));
         }
         this._elements.container.appendChild(
             this._elements.content
